@@ -1,0 +1,46 @@
+###############################################################################
+project:
+  name: @name@
+  version: @version@
+  description: @description@
+  author:
+    name: @project.author.name@
+    url: @project.author.url@
+    email: @project.author.email@
+## 服务配置
+server:
+  port: 8080
+  max-http-header-size: 10240
+spring:
+  profiles:
+    active: @active.profile@
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+  jackson:
+    default-property-inclusion: non_null
+###############################################################################
+## mybatis
+mybatis:
+  type-aliases-package: cn.mypandora.springboot.modular.system.model.po
+  #  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/**/*.xml
+###############################################################################
+## mapper
+mapper:
+  mappers:
+    - cn.mypandora.springboot.core.base.MyBaseMapper
+  not-empty: false
+  identity: Mysql
+###############################################################################
+## pagehelper
+pagehelper:
+  helper-dialect: mysql
+  reasonable: false
+  support-methods-arguments: true
+  params: count=countSql
+###############################################################################
+## log
+logging:
+  config: classpath:logback-spring.xml
+###############################################################################

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mypandora.springboot.modular.system.mapper.ResourceMapper">
+    <resultMap id="resourceMap" type="resource">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="lft" jdbcType="INTEGER" property="lft"/>
+        <result column="rgt" jdbcType="INTEGER" property="rgt"/>
+        <result column="level" jdbcType="INTEGER" property="level"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="is_update" jdbcType="INTEGER" property="isUpdate"/>
+        <result column="uri" jdbcType="VARCHAR" property="uri"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="method" jdbcType="VARCHAR" property="method"/>
+        <result column="icon" jdbcType="VARCHAR" property="icon"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="rolePermRule" type="resource">
+        <result column="url" jdbcType="VARCHAR" property="uri"/>
+        <result column="needRoles" jdbcType="VARCHAR" property="needRoles"/>
+    </resultMap>
+
+    <sql id="baseColumns">
+        ${alias}.id,
+        ${alias}.parent_id,
+        ${alias}.name,
+        ${alias}.lft,
+        ${alias}.rgt,
+        ${alias}.level,
+        ${alias}.code,
+        ${alias}.status,
+        ${alias}.uri,
+        ${alias}.type,
+        ${alias}.method,
+        ${alias}.icon,
+        ${alias}.description,
+        ${alias}.create_time,
+        ${alias}.update_time
+    </sql>
+
+    <select id="listAll" resultMap="resourceMap">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_resource t
+        WHERE 1=1
+        <if test="type != null">
+            AND t.type=#{type}
+        </if>
+        <if test="status != null">
+            AND t.status=#{status}
+        </if>
+        ORDER BY t.lft ASC
+    </select>
+
+    <select id="listByUserIdOrName" resultMap="resourceMap">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_resource t
+        WHERE 1=1
+        <if test="type!=null">
+            AND t.type=#{type}
+        </if>
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        AND t.id IN (
+        SELECT rr.resource_id
+        FROM sys_role_resource rr
+        JOIN (
+        SELECT ur.role_id AS role_id
+        FROM sys_user_role ur
+        WHERE ur.user_id =(
+        SELECT id AS userId
+        FROM sys_user u
+        WHERE u.username=#{username} OR u.id=#{userId}
+        )
+        ) temp ON rr.role_id=temp.role_id
+        )
+    </select>
+
+    <select id="listAncestries" resultMap="resourceMap">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_resource t
+        WHERE 1=1
+        <if test="type != null">
+            AND t.type=#{type}
+        </if>
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        <![CDATA[
+            AND t.lft<(
+                    SELECT s.lft
+                    FROM sys_resource s
+                    WHERE s.id=#{id})
+            AND t.rgt>(
+                    SELECT s.lft
+                    FROM sys_resource s
+                    WHERE s.id=#{id})
+        ]]>
+        ORDER BY t.lft ASC
+    </select>
+
+    <select id="listDescendants" resultMap="resourceMap">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_resource t
+        WHERE 1=1
+        <if test="type != null">
+            AND t.type=#{type}
+        </if>
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        <![CDATA[
+            AND t.lft>(
+                    SELECT s.lft
+                    FROM sys_resource s
+                    WHERE s.id=#{id})
+            AND t.rgt<(
+                    SELECT s.rgt
+                    FROM sys_resource s
+                    WHERE s.id=#{id})
+        ]]>
+        ORDER BY t.lft ASC
+    </select>
+
+    <select id="listChildren" resultMap="resourceMap">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_resource t
+        WHERE 1=1
+        AND t.type=#{type}
+        AND t.parent_id=#{id}
+        <if test="status!=null">
+            AND t.status=#{status}
+        </if>
+        ORDER BY t.lft ASC
+    </select>
+
+    <update id="parentRgtAdd">
+        UPDATE sys_resource t
+        SET t.rgt=(t.rgt + #{amount}), t.update_time=now()
+        WHERE 1=1
+        AND t.is_update =1
+        AND id = #{id}
+    </update>
+
+    <update id="lftAdd">
+        UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
+        SET t.lft= (t.lft + #{amount}), t.update_time=now()
+        WHERE 1=1
+        AND t.is_update =1
+        <![CDATA[
+            AND t.lft > f.rgt
+        ]]>
+        <if test="range!=null">
+            <![CDATA[
+                AND t.lft < #{range}
+            ]]>
+        </if>
+    </update>
+
+    <update id="rgtAdd">
+        UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
+        SET t.rgt= (t.rgt + #{amount}), t.update_time=now()
+        WHERE 1=1
+        AND t.is_update = 1
+        <![CDATA[
+            AND t.rgt > f.rgt
+        ]]>
+        <if test="range!=null">
+            <![CDATA[
+                AND t.rgt < #{range}
+            ]]>
+        </if>
+    </update>
+
+    <update id="selfAndDescendant">
+        UPDATE sys_resource t
+        SET t.lft=(t.lft + #{amount}), t.rgt=(t.rgt + #{amount}), t.update_time=now()
+        <if test="level!=null">
+            ,t.level=(t.level + #{level})
+        </if>
+        WHERE 1 = 1
+        AND t.id in
+        <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="enableDescendants">
+        UPDATE sys_resource t
+        SET t.status= #{status}, t.update_time=now()
+        WHERE 1 = 1
+        AND t.id in
+        <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="locking">
+        UPDATE sys_resource t
+        SET t.is_update= #{isUpdate}
+        WHERE 1 = 1
+        AND t.id in
+        <foreach collection="idList" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="listRolePermRules" resultMap="rolePermRule">
+        SELECT CONCAT(t.uri, "==", UPPER(t.method)) AS url,
+        GROUP_CONCAT(role.code ORDER BY t.uri) AS needRoles
+        FROM sys_resource t
+        INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
+        INNER JOIN sys_role role ON rr.role_id = role.id
+        WHERE 1 = 1
+        AND t.status = 1
+        AND t.`type` = 2
+        GROUP BY t.uri, t.id
+        ORDER BY url DESC
+    </select>
+
+    <select id="listByRoleIds" resultMap="resourceMap">
+        SELECT
+        <include refid="baseColumns">
+            <property name="alias" value="t"/>
+        </include>
+        FROM sys_resource t
+        INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
+        WHERE 1 = 1
+        AND rr.role_id in
+        <foreach collection="roleIds" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>
