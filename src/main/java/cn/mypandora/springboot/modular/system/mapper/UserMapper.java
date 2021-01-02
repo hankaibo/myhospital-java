@@ -20,19 +20,10 @@ public interface UserMapper extends MyBaseMapper<User> {
      *
      * @param user
      *            查询条件
+     * @param departmentId
+     *            部门主键id
      * @return 带分页用户数据集
      */
-    List<User> pageUser(User user);
-
-    /**
-     * 根据用户id查询用户信息，带部门id。
-     *
-     * @param id
-     *            用户Id
-     * @param username
-     *            用户姓名
-     * @return 带部门的用户信息
-     */
-    User getUser(@Param("id") Long id, @Param("username") String username);
+    List<User> pageUser(@Param(value = "user") User user, @Param(value = "departmentId") Long departmentId);
 
 }

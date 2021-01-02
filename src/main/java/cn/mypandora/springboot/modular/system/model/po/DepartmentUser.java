@@ -1,7 +1,6 @@
 package cn.mypandora.springboot.modular.system.model.po;
 
 import javax.persistence.Table;
-import javax.validation.constraints.PositiveOrZero;
 
 import lombok.Data;
 import tk.mybatis.mapper.annotation.NameStyle;
@@ -19,14 +18,13 @@ import tk.mybatis.mapper.code.Style;
 public class DepartmentUser extends BaseEntity {
 
     /**
-     * 部门ID
+     * 部门id
      */
-    @PositiveOrZero
     private Long departmentId;
 
     /**
-     * 用户ID
+     * 用户id
      */
-    @PositiveOrZero
     private Long userId;
+
 }

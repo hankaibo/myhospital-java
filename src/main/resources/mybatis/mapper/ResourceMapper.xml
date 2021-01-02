@@ -26,21 +26,50 @@
     </resultMap>
 
     <sql id="baseColumns">
-        ${alias}.id,
-        ${alias}.parent_id,
-        ${alias}.name,
-        ${alias}.lft,
-        ${alias}.rgt,
-        ${alias}.level,
-        ${alias}.code,
-        ${alias}.status,
-        ${alias}.uri,
-        ${alias}.type,
-        ${alias}.method,
-        ${alias}.icon,
-        ${alias}.description,
-        ${alias}.create_time,
-        ${alias}.update_time
+        ${alias}
+        .id,
+        ${alias}
+        .
+        parent_id,
+        ${alias}
+        .
+        name,
+        ${alias}
+        .
+        lft,
+        ${alias}
+        .
+        rgt,
+        ${alias}
+        .
+        level,
+        ${alias}
+        .
+        code,
+        ${alias}
+        .
+        status,
+        ${alias}
+        .
+        uri,
+        ${alias}
+        .
+        type,
+        ${alias}
+        .
+        method,
+        ${alias}
+        .
+        icon,
+        ${alias}
+        .
+        description,
+        ${alias}
+        .
+        create_time,
+        ${alias}
+        .
+        update_time
     </sql>
 
     <select id="listAll" resultMap="resourceMap">
@@ -56,7 +85,7 @@
         <if test="status != null">
             AND t.status=#{status}
         </if>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listByUserIdOrName" resultMap="resourceMap">
@@ -85,6 +114,7 @@
         )
         ) temp ON rr.role_id=temp.role_id
         )
+        ORDER BY t.lft
     </select>
 
     <select id="listAncestries" resultMap="resourceMap">
@@ -110,7 +140,7 @@
                     FROM sys_resource s
                     WHERE s.id=#{id})
         ]]>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listDescendants" resultMap="resourceMap">
@@ -136,7 +166,7 @@
                     FROM sys_resource s
                     WHERE s.id=#{id})
         ]]>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
 
     <select id="listChildren" resultMap="resourceMap">
@@ -151,30 +181,22 @@
         <if test="status!=null">
             AND t.status=#{status}
         </if>
-        ORDER BY t.lft ASC
+        ORDER BY t.lft
     </select>
-
-    <update id="parentRgtAdd">
-        UPDATE sys_resource t
-        SET t.rgt=(t.rgt + #{amount}), t.update_time=now()
-        WHERE 1=1
-        AND t.is_update =1
-        AND id = #{id}
-    </update>
 
     <update id="lftAdd">
         UPDATE sys_resource t,(SELECT * FROM sys_resource WHERE id = #{id, jdbcType=NUMERIC}) f
         SET t.lft= (t.lft + #{amount}), t.update_time=now()
         WHERE 1=1
         AND t.is_update =1
-        <![CDATA[
-            AND t.lft > f.rgt
-        ]]>
         <if test="range!=null">
             <![CDATA[
                 AND t.lft < #{range}
             ]]>
         </if>
+        <![CDATA[
+            AND t.lft > f.rgt
+        ]]>
     </update>
 
     <update id="rgtAdd">
@@ -182,14 +204,14 @@
         SET t.rgt= (t.rgt + #{amount}), t.update_time=now()
         WHERE 1=1
         AND t.is_update = 1
-        <![CDATA[
-            AND t.rgt > f.rgt
-        ]]>
         <if test="range!=null">
             <![CDATA[
                 AND t.rgt < #{range}
             ]]>
         </if>
+        <![CDATA[
+            AND t.rgt >= f.rgt
+        ]]>
     </update>
 
     <update id="selfAndDescendant">
@@ -226,14 +248,14 @@
     </update>
 
     <select id="listRolePermRules" resultMap="rolePermRule">
-        SELECT CONCAT(t.uri, "==", UPPER(t.method)) AS url,
-        GROUP_CONCAT(role.code ORDER BY t.uri) AS needRoles
+        SELECT CONCAT(t.uri, "==", UPPER(t.method))   AS url,
+               GROUP_CONCAT(role.code ORDER BY t.uri) AS needRoles
         FROM sys_resource t
-        INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
-        INNER JOIN sys_role role ON rr.role_id = role.id
+                 INNER JOIN sys_role_resource rr ON t.id = rr.resource_id
+                 INNER JOIN sys_role role ON rr.role_id = role.id
         WHERE 1 = 1
-        AND t.status = 1
-        AND t.`type` = 2
+          AND t.status = 1
+          AND t.`type` = 2
         GROUP BY t.uri, t.id
         ORDER BY url DESC
     </select>

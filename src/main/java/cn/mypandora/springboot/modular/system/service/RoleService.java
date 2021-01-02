@@ -108,14 +108,14 @@ public interface RoleService {
      *
      * @param roleId
      *            角色Id
-     * @param plusId
-     *            增加资源Id集合
-     * @param minusId
-     *            删除资源Id集合
+     * @param plusResourceIds
+     *            增加资源Id数组
+     * @param minusResourceIds
+     *            删除资源Id数组
      * @param userId
      *            用户id
      */
-    void grantRoleResource(Long roleId, long[] plusId, long[] minusId, Long userId);
+    void grantRoleResource(Long roleId, Long[] plusResourceIds, Long[] minusResourceIds, Long userId);
 
     /**
      * 根据用户id或者名称查询用户的所有角色。 默认只查询可用状态的角色。
