@@ -1,14 +1,5 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.enums.StatusEnum;
@@ -17,6 +8,14 @@ import cn.mypandora.springboot.modular.system.mapper.DepartmentUserMapper;
 import cn.mypandora.springboot.modular.system.model.po.BaseEntity;
 import cn.mypandora.springboot.modular.system.model.po.Department;
 import cn.mypandora.springboot.modular.system.service.DepartmentService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * DepartmentServiceImpl
@@ -113,10 +112,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     /**
      * 部门修改如果涉及父级部门变动则非常复杂，在这里先使用isUpdate锁住被移动部门，保证不修改它的左右值，方便后续操作。
      *
-     * @param department
-     *            部门信息
-     * @param userId
-     *            用户id
+     * @param department 部门信息
+     * @param userId     用户id
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -250,11 +247,11 @@ public class DepartmentServiceImpl implements DepartmentService {
         List<Department> departmentList = listDepartment(null, userId);
 
         Optional<Department> optionalSource =
-            departmentList.stream().filter(it -> it.getId().equals(sourceId)).findFirst();
+                departmentList.stream().filter(it -> it.getId().equals(sourceId)).findFirst();
         Department sourceInfo = optionalSource.orElse(null);
 
         Optional<Department> optionalTarget =
-            departmentList.stream().filter(it -> it.getId().equals(targetId)).findFirst();
+                departmentList.stream().filter(it -> it.getId().equals(targetId)).findFirst();
         Department targetInfo = optionalTarget.orElse(null);
 
         if (null == sourceInfo || null == targetInfo) {
@@ -262,11 +259,11 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
 
         List<Long> allIdList =
-            departmentList.stream().sorted(Comparator.comparing(Department::getLevel).thenComparing(Department::getLft))
-                .map(BaseEntity::getId).collect(Collectors.toList());
+                departmentList.stream().sorted(Comparator.comparing(Department::getLevel).thenComparing(Department::getLft))
+                        .map(BaseEntity::getId).collect(Collectors.toList());
         // 同层级、相邻
         if (!(sourceInfo.getLevel().equals(targetInfo.getLevel()))
-            || !(Math.abs(allIdList.indexOf(sourceId) - allIdList.indexOf(targetId)) == 1)) {
+                || !(Math.abs(allIdList.indexOf(sourceId) - allIdList.indexOf(targetId)) == 1)) {
             throw new BusinessException(Department.class, "所选部门错误，不是同级相邻部门。");
         }
 
@@ -291,8 +288,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     /**
      * 获取此部门及其子孙部门的id。
      *
-     * @param id
-     *            部门主键id
+     * @param id 部门主键id
      * @return 部门主键id集合
      */
     private List<Long> listDescendantId(Long id) {
@@ -305,8 +301,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     /**
      * 获取各部门最顶级的祖先部门。 如果一个用户在父级部门、本级部门、子级部门都存在，则只过滤出父级部门，以减少后边重复查询。
      *
-     * @param departmentList
-     *            部门列表
+     * @param departmentList 部门列表
      * @return 用户所在各部门的最顶级部门。
      */
     private List<Department> listTopAncestryDepartment(List<Department> departmentList) {
@@ -316,7 +311,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         for (Department department : departmentList) {
             if (departmentList.stream().filter(item -> item.getLevel() < department.getLevel())
-                .noneMatch(item -> item.getLft() < department.getLft() && item.getRgt() > department.getRgt())) {
+                    .noneMatch(item -> item.getLft() < department.getLft() && item.getRgt() > department.getRgt())) {
                 result.add(department);
             }
         }
@@ -326,8 +321,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     /**
      * 防止更新部门时，指定自己的下级部门作为自己的父级部门。
      *
-     * @param department
-     *            部门
+     * @param department 部门
      * @return true可以更新；false不可以更新
      */
     private boolean isCanUpdateParent(Department department) {
@@ -335,16 +329,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         Department parentDepartment = departmentMapper.selectByPrimaryKey(department.getParentId());
         return !(parentDepartment.getLft() >= childDepartment.getLft()
-            && parentDepartment.getRgt() <= childDepartment.getRgt());
+                && parentDepartment.getRgt() <= childDepartment.getRgt());
     }
 
     /**
      * 获取两个部门最近的共同祖先部门。
      *
-     * @param department1
-     *            第一个部门
-     * @param department2
-     *            第二个部门
+     * @param department1 第一个部门
+     * @param department2 第二个部门
      * @return 最近的祖先部门
      */
     private Department getCommonAncestry(Department department1, Department department2) {
@@ -370,7 +362,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         Comparator<Department> comparator = Comparator.comparing(Department::getLft);
         return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator)
-            .orElseThrow(RuntimeException::new);
+                .orElseThrow(RuntimeException::new);
     }
 
 }

@@ -1,17 +1,5 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.github.pagehelper.PageHelper;
-
 import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.base.PageInfo;
@@ -23,7 +11,17 @@ import cn.mypandora.springboot.modular.system.model.po.MessageReceiver;
 import cn.mypandora.springboot.modular.system.model.po.MessageSender;
 import cn.mypandora.springboot.modular.system.model.vo.Msg;
 import cn.mypandora.springboot.modular.system.service.MessageService;
+import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * MessageServiceImpl
@@ -40,7 +38,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Autowired
     public MessageServiceImpl(MessageSenderMapper messageSenderMapper, MessageReceiverMapper messageReceiverMapper,
-        MessageContentMapper messageContentMapper) {
+                              MessageContentMapper messageContentMapper) {
         this.messageSenderMapper = messageSenderMapper;
         this.messageReceiverMapper = messageReceiverMapper;
         this.messageContentMapper = messageContentMapper;
@@ -158,7 +156,7 @@ public class MessageServiceImpl implements MessageService {
         if (minusReceiveIds.length > 0) {
             Example example = new Example(MessageReceiver.class);
             example.createCriteria().andIn("receiveId", Arrays.asList(minusReceiveIds)).andEqualTo("contentId",
-                msg.getId());
+                    msg.getId());
             messageReceiverMapper.deleteByExample(example);
         }
 

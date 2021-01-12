@@ -89,7 +89,7 @@ public interface DepartmentMapper extends MyBaseMapper<Department> {
      * <p>
      * 大于当前部门左值，方便插入到父部门的头；大于当前部门右值，方便插入到父部门末尾 *
      * </p>
-     * 
+     *
      * @param id
      *            当前部门id
      * @param amount

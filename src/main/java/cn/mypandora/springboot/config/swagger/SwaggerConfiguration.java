@@ -82,7 +82,7 @@ public class SwaggerConfiguration {
             .modelRef(new ModelRef("string")).parameterType("header")
             .order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER - 1).required(true).build();
         return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).groupName("business API").select()
-            .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.your"))
+            .apis(RequestHandlerSelectors.basePackage("cn.mypandora.springboot.modular.hospital.controller"))
             .paths(PathSelectors.regex("/api/.*")).build().useDefaultResponseMessages(false)
             .globalResponseMessage(RequestMethod.GET, customResponseMessage())
             .globalResponseMessage(RequestMethod.POST, customResponseMessage())

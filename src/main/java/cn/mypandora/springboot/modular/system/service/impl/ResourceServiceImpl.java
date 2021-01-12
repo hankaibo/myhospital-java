@@ -1,16 +1,5 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.enums.ResourceTypeEnum;
@@ -24,7 +13,17 @@ import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.po.RoleResource;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * ResourceServiceImpl
@@ -41,7 +40,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Autowired
     public ResourceServiceImpl(ResourceMapper resourceMapper, RoleResourceMapper roleResourceMapper,
-        RoleMapper roleMapper) {
+                               RoleMapper roleMapper) {
         this.resourceMapper = resourceMapper;
         this.roleResourceMapper = roleResourceMapper;
         this.roleMapper = roleMapper;
@@ -285,8 +284,7 @@ public class ResourceServiceImpl implements ResourceService {
     /**
      * 获取此资源及其子孙资源的id。
      *
-     * @param id
-     *            资源
+     * @param id 资源
      * @return 资源主键id集合
      */
     private List<Long> listDescendantId(Long id) {
@@ -299,8 +297,7 @@ public class ResourceServiceImpl implements ResourceService {
     /**
      * 防止更新资源时，指定自己的下级资源作为自己的父级资源。
      *
-     * @param resource
-     *            资源
+     * @param resource 资源
      * @return true可以更新；false不可以更新
      */
     private boolean isCanUpdateParent(Resource resource) {
@@ -308,16 +305,14 @@ public class ResourceServiceImpl implements ResourceService {
 
         Resource parentResource = resourceMapper.selectByPrimaryKey(resource.getParentId());
         return !(parentResource.getLft() >= childResource.getLft()
-            && parentResource.getRgt() <= childResource.getRgt());
+                && parentResource.getRgt() <= childResource.getRgt());
     }
 
     /**
      * 获取两个资源最近的共同祖先资源。
      *
-     * @param resource1
-     *            第一个资源
-     * @param resource2
-     *            第二个资源
+     * @param resource1 第一个资源
+     * @param resource2 第二个资源
      * @return 最近的祖先资源
      */
     private Resource getCommonAncestry(Resource resource1, Resource resource2) {
@@ -343,7 +338,7 @@ public class ResourceServiceImpl implements ResourceService {
 
         Comparator<Resource> comparator = Comparator.comparing(Resource::getLft);
         return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator)
-            .orElseThrow(RuntimeException::new);
+                .orElseThrow(RuntimeException::new);
     }
 
     /**

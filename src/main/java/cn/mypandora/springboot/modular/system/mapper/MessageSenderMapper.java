@@ -26,7 +26,6 @@ public interface MessageSenderMapper extends MyBaseMapper<MessageSender> {
     List<Msg> listMsg(Msg msg);
 
     /**
-     * 
      * @param id
      *            站内信内容主键id
      * @param userId

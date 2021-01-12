@@ -46,15 +46,14 @@ public class LoginController {
      * 用户操作部门、角色和资源时，从token中取出userId，通过userId从数据库中查询出相应的部门、角色和资源。然后再进行操作权限的判断。
      * 优点：每次都是基于不变的用户userId动态从数据库中查询最新权限，修改可即时生效。 缺点：每次操作都查询数据库，sql压力大。
      *
-     * @param request
-     *            request
+     * @param request request
      * @return token
      */
     @ApiOperation(value = "用户登录", notes = "输入名称与密码，返回token与role信息。")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "authorization", paramType = "header", dataType = "String", access = "hidden"),
-        @ApiImplicitParam(name = "username", value = "用户名称", required = true, paramType = "body"),
-        @ApiImplicitParam(name = "password", value = "用户密码", required = true, paramType = "body")})
+            @ApiImplicitParam(name = "authorization", paramType = "header", dataType = "String", access = "hidden"),
+            @ApiImplicitParam(name = "username", value = "用户名称", required = true, paramType = "body"),
+            @ApiImplicitParam(name = "password", value = "用户密码", required = true, paramType = "body")})
     @PostMapping("/login")
     public Token login(HttpServletRequest request) {
         // 获取用户信息
@@ -66,8 +65,7 @@ public class LoginController {
     /**
      * 用户退出，清空token.
      *
-     * @param authorization
-     *            token
+     * @param authorization token
      */
     @ApiOperation(value = "用户登出", notes = "带token。")
     @PostMapping("/logout")
