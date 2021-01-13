@@ -4,6 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.cache.annotation.EnableCaching;
+
+import springfox.documentation.oas.annotations.EnableOpenApi;
 import tk.mybatis.spring.annotation.MapperScan;
 
 /**
@@ -15,6 +17,7 @@ import tk.mybatis.spring.annotation.MapperScan;
  * @date 2019/6/17
  */
 
+@EnableOpenApi
 @SpringBootApplication
 @ServletComponentScan
 @EnableCaching
