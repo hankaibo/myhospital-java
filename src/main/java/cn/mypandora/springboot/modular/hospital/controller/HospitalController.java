@@ -140,7 +140,7 @@ public class HospitalController {
      * @return 医院列表
      */
     @ApiOperation(value = "获取指定圆内的医院")
-    @GetMapping("/circle")
+    @GetMapping("/nearby/circle")
     public List<Hospital> hospitalWithinCircle(@Positive Double lng, @Positive Double lat, @Positive Double r) {
         // 圆
         Point center = new Point(lng, lat);
