@@ -12,11 +12,11 @@
 
     <groupId>cn.mypandora</groupId>
     <artifactId>myhospital</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>myhospital-backend</name>
-    <description>北京医保定点医院选择助手接口。</description>
+    <description>北京医保定点医院选择助手接口</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
