@@ -1,5 +1,14 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.core.enums.StatusEnum;
@@ -9,15 +18,7 @@ import cn.mypandora.springboot.modular.system.mapper.RoleResourceMapper;
 import cn.mypandora.springboot.modular.system.mapper.UserRoleMapper;
 import cn.mypandora.springboot.modular.system.model.po.*;
 import cn.mypandora.springboot.modular.system.service.RoleService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
-
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * RoleServiceImpl
@@ -285,7 +286,7 @@ public class RoleServiceImpl implements RoleService {
 
     /**
      * 清空指定角色资源
-     *
+     * 
      * @param roleId
      *            角色id
      */
@@ -300,7 +301,7 @@ public class RoleServiceImpl implements RoleService {
 
     /**
      * 清空指定角色用户
-     *
+     * 
      * @param roleId
      *            角色id
      */

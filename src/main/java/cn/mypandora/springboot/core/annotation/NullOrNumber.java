@@ -12,7 +12,7 @@ import javax.validation.Payload;
 
 /**
  * 自定义校验规则。
- *
+ * 
  * @author hankaibo
  * @date 2020/5/5
  */

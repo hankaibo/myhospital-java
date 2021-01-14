@@ -93,8 +93,6 @@ public class FilterChainManager {
             List<RolePermRule> rolePermRules = this.resourceService.listRolePermRules();
             if (null != rolePermRules) {
                 rolePermRules.forEach(rule -> {
-                    log.debug("rule-------------------------------------------------------------->", rule.getUrl(),
-                        rule.getNeedRoles());
                     StringBuilder chain = rule.toFilterChain();
                     if (null != chain) {
                         filterChainDefinitionMap.putIfAbsent(rule.getUrl(), chain.toString() + ",userIdFilter");

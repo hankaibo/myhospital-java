@@ -1,5 +1,27 @@
 package cn.mypandora.springboot.modular.system.service.impl;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageHelper;
+
 import cn.mypandora.springboot.config.exception.BusinessException;
 import cn.mypandora.springboot.config.exception.EntityNotFoundException;
 import cn.mypandora.springboot.config.exception.StorageException;
@@ -16,28 +38,8 @@ import cn.mypandora.springboot.modular.system.model.vo.Token;
 import cn.mypandora.springboot.modular.system.service.ResourceService;
 import cn.mypandora.springboot.modular.system.service.RoleService;
 import cn.mypandora.springboot.modular.system.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
-import org.mindrot.jbcrypt.BCrypt;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.entity.Example;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * UserServiceImpl
@@ -65,8 +67,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserMapper userMapper, UserRoleMapper userRoleMapper,
-                           DepartmentUserMapper departmentUserMapper, RoleService roleService, ResourceService resourceService,
-                           StringRedisTemplate stringRedisTemplate) {
+        DepartmentUserMapper departmentUserMapper, RoleService roleService, ResourceService resourceService,
+        StringRedisTemplate stringRedisTemplate) {
         this.userMapper = userMapper;
         this.userRoleMapper = userRoleMapper;
         this.departmentUserMapper = departmentUserMapper;
@@ -92,9 +94,9 @@ public class UserServiceImpl implements UserService {
 
         // 生成jwt并将签发的JWT存储到Redis： {JWT-ID-{username} , jwt}
         String jwt = JsonWebTokenUtil.createJwt(UUID.randomUUID().toString(), "token-server", username,
-                refreshPeriodTime >> 1, userId, roleIds, roleCodes, resourceCodes);
+            refreshPeriodTime >> 1, userId, roleIds, roleCodes, resourceCodes);
         stringRedisTemplate.opsForValue().set(StringUtils.upperCase("JWT-ID-" + username), jwt, refreshPeriodTime,
-                TimeUnit.SECONDS);
+            TimeUnit.SECONDS);
 
         // 返回给前台数据
         Token token = new Token();
@@ -222,7 +224,7 @@ public class UserServiceImpl implements UserService {
         try {
             info = userMapper.selectByPrimaryKey(user.getId());
             if (null != info.getAvatar() && !StringUtils.isNotBlank(info.getAvatar())
-                    && !StringUtils.equals(info.getAvatar(), user.getAvatar())) {
+                && !StringUtils.equals(info.getAvatar(), user.getAvatar())) {
                 Path rootLocation = Paths.get(dirPath);
                 Files.deleteIfExists(rootLocation.resolve(info.getAvatar()));
             }
@@ -250,7 +252,7 @@ public class UserServiceImpl implements UserService {
         if (null != minusDepartmentIds && minusDepartmentIds.length > 0) {
             Example departmentUser = new Example(DepartmentUser.class);
             departmentUser.createCriteria().andIn("departmentId", Arrays.asList(minusDepartmentIds))
-                    .andEqualTo("userId", user.getId());
+                .andEqualTo("userId", user.getId());
             departmentUserMapper.deleteByExample(departmentUser);
         }
     }
@@ -368,8 +370,9 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 根据用户姓名，获取其角色码和id
-     *
-     * @param username 用户名称
+     * 
+     * @param username
+     *            用户名称
      * @return 角色信息
      */
     private Map<String, String> getRoles(String username) {
@@ -389,13 +392,14 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 根据用户姓名，获取其资源码
-     *
-     * @param username 用户名称
+     * 
+     * @param username
+     *            用户名称
      * @return 资源码
      */
     private String getResourceCodes(String username) {
         List<Resource> resourceList =
-                resourceService.listResourceByUserIdOrName(null, username, null, StatusEnum.ENABLED.getValue());
+            resourceService.listResourceByUserIdOrName(null, username, null, StatusEnum.ENABLED.getValue());
         List<String> resourceCodeList = resourceList.stream().map(Resource::getCode).collect(Collectors.toList());
         return StringUtils.join(resourceCodeList, ',');
     }
@@ -403,7 +407,8 @@ public class UserServiceImpl implements UserService {
     /**
      * 使用BCrypt加密密码，与之相对应的 PasswordRealm.java 也要使用这个规则。
      *
-     * @param user 加密的用户
+     * @param user
+     *            加密的用户
      */
     private void passwordHelper(User user) {
         if (StringUtils.isEmpty(user.getPassword())) {
@@ -421,7 +426,8 @@ public class UserServiceImpl implements UserService {
     /**
      * 将前台传递来的路径转为后台数据库路径
      *
-     * @param user 用户对象
+     * @param user
+     *            用户对象
      */
     private void front2BackPath(User user) {
         converterPath(user, dirPath);
@@ -430,7 +436,8 @@ public class UserServiceImpl implements UserService {
     /**
      * 将后台传递来的路径转为后前数据库路径
      *
-     * @param user 用户对象
+     * @param user
+     *            用户对象
      */
     private void back2FrontPath(User user) {
         converterPath(user, remoteUrl);
