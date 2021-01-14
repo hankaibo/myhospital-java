@@ -2,7 +2,9 @@ package cn.mypandora.springboot.modular.hospital.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.*;
@@ -124,9 +126,9 @@ public class HospitalServiceImpl implements HospitalService {
         assert geoResults != null;
         List<GeoResult<RedisGeoCommands.GeoLocation<Object>>> content = geoResults.getContent();
 
-        content.forEach(item -> hospitalList
-            .add(Hospital.builder().distance(item.getDistance().getValue()).lat(item.getContent().getPoint().getX())
-                .lng(item.getContent().getPoint().getY()).id(Long.valueOf((Integer)item.getContent().getName())).build()));
+        content.forEach(item -> hospitalList.add(Hospital.builder().distance(item.getDistance().getValue())
+            .lat(item.getContent().getPoint().getX()).lng(item.getContent().getPoint().getY())
+            .id(Long.valueOf((Integer)item.getContent().getName())).build()));
 
         return getHospital(hospitalList);
     }
@@ -152,12 +154,11 @@ public class HospitalServiceImpl implements HospitalService {
      * @return 完整的医院信息
      */
     private List<Hospital> getHospital(List<Hospital> hospitalList) {
-        List<Hospital> result = new ArrayList<>();
-        for (Hospital hospital : hospitalList) {
-            if (hospital.getId() != null) {
-                result.add(getHospitalById(hospital.getId()));
-            }
+        Example example = new Example(Hospital.class);
+        Example.Criteria criteria = example.createCriteria();
+        if (hospitalList != null) {
+            criteria.andIn("id", hospitalList.stream().mapToLong(Hospital::getId).boxed().collect(Collectors.toList()));
         }
-        return result;
+        return hospitalMapper.selectByExample(example);
     }
 }
