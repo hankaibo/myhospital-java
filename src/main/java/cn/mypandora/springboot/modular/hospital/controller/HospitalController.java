@@ -147,7 +147,7 @@ public class HospitalController {
         @Positive @RequestParam(value = "limit", defaultValue = "200") int limit) {
         // 圆
         Point center = new Point(lng, lat);
-        Distance radius = new Distance(r, RedisGeoCommands.DistanceUnit.MILES);
+        Distance radius = new Distance(r, RedisGeoCommands.DistanceUnit.METERS);
         Circle circle = new Circle(center, radius);
 
         // 参数
