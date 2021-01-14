@@ -35,7 +35,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Autowired
     public RoleServiceImpl(RoleMapper roleMapper, RoleResourceMapper roleResourceMapper, UserRoleMapper userRoleMapper,
-                           FilterChainManager filterChainManager) {
+        FilterChainManager filterChainManager) {
         this.roleMapper = roleMapper;
         this.roleResourceMapper = roleResourceMapper;
         this.userRoleMapper = userRoleMapper;
@@ -225,11 +225,11 @@ public class RoleServiceImpl implements RoleService {
         }
 
         List<Long> allIdList =
-                roleList.stream().sorted(Comparator.comparing(Role::getLevel).thenComparing(Role::getLft))
-                        .map(BaseEntity::getId).collect(Collectors.toList());
+            roleList.stream().sorted(Comparator.comparing(Role::getLevel).thenComparing(Role::getLft))
+                .map(BaseEntity::getId).collect(Collectors.toList());
 
         if (!(sourceInfo.getLevel().equals(targetInfo.getLevel()))
-                || !(Math.abs(allIdList.indexOf(sourceId) - allIdList.indexOf(targetId)) == 1)) {
+            || !(Math.abs(allIdList.indexOf(sourceId) - allIdList.indexOf(targetId)) == 1)) {
             throw new BusinessException(Role.class, "角色错误。");
         }
 
@@ -258,7 +258,7 @@ public class RoleServiceImpl implements RoleService {
         if (minusResourceIds.length > 0) {
             Example roleResource = new Example(RoleResource.class);
             roleResource.createCriteria().andIn("resourceId", Arrays.asList(minusResourceIds)).andEqualTo("roleId",
-                    roleId);
+                roleId);
             roleResourceMapper.deleteByExample(roleResource);
         }
 
@@ -286,7 +286,8 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 清空指定角色资源
      *
-     * @param roleId 角色id
+     * @param roleId
+     *            角色id
      */
     public void clearResource(Long roleId) {
         // 删除旧的资源
@@ -300,7 +301,8 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 清空指定角色用户
      *
-     * @param roleId 角色id
+     * @param roleId
+     *            角色id
      */
     public void clearUser(Long roleId) {
         // 删除旧的关联用户
@@ -312,7 +314,8 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 获取此角色及其子孙角色的id。
      *
-     * @param id 角色
+     * @param id
+     *            角色
      * @return 角色主键id集合
      */
     private List<Long> listDescendantId(Long id) {
@@ -325,7 +328,8 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 获取各角色最顶级的祖先角色。 如果一个用户在父级角色、本级角色、子级角色都存在，则只过滤出父级角色，以减少后边重复查询。
      *
-     * @param roleList 角色列表
+     * @param roleList
+     *            角色列表
      * @return 用户所在各角色的最顶级角色。
      */
     private List<Role> listTopAncestryRole(List<Role> roleList) {
@@ -335,7 +339,7 @@ public class RoleServiceImpl implements RoleService {
         }
         for (Role role : roleList) {
             if (roleList.stream().filter(item -> item.getLevel() < role.getLevel())
-                    .noneMatch(item -> item.getLft() < role.getLft() && item.getRgt() > role.getRgt())) {
+                .noneMatch(item -> item.getLft() < role.getLft() && item.getRgt() > role.getRgt())) {
                 result.add(role);
             }
         }
@@ -345,7 +349,8 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 防止更新角色时，指定自己的下级角色作为自己的父级角色。
      *
-     * @param role 角色
+     * @param role
+     *            角色
      * @return true可以更新；false不可以更新
      */
     private boolean isCanUpdateParent(Role role) {
@@ -358,8 +363,10 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 获取两个角色最近的共同祖先角色。
      *
-     * @param role1 第一个角色
-     * @param role2 第二个角色
+     * @param role1
+     *            第一个角色
+     * @param role2
+     *            第二个角色
      * @return 最近的祖先角色
      */
     private Role getCommonAncestry(Role role1, Role role2) {
@@ -385,7 +392,7 @@ public class RoleServiceImpl implements RoleService {
 
         Comparator<Role> comparator = Comparator.comparing(Role::getLft);
         return newParentAncestries.stream().filter(oldParentAncestries::contains).max(comparator)
-                .orElseThrow(RuntimeException::new);
+            .orElseThrow(RuntimeException::new);
     }
 
 }
