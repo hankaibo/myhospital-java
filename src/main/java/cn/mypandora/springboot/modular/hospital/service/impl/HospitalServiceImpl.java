@@ -92,11 +92,15 @@ public class HospitalServiceImpl implements HospitalService {
 
     @Override
     public Long saveHospital2Redis(Collection<Hospital> hospitalCollection) {
+        if (hospitalCollection.size() == 0) {
+            return 0L;
+        }
         GeoOperations<String, Object> ops = redisTemplate.opsForGeo();
 
         Set<RedisGeoCommands.GeoLocation<Object>> locationSet = new HashSet<>();
-        hospitalCollection.forEach(hospital -> locationSet.add(
-            new RedisGeoCommands.GeoLocation<>(hospital.getId(), new Point(hospital.getLng(), hospital.getLat()))));
+        hospitalCollection.stream().filter(hospital -> hospital.getLng() != null && hospital.getLat() != null)
+            .forEach(hospital -> locationSet.add(
+                new RedisGeoCommands.GeoLocation<>(hospital.getId(), new Point(hospital.getLng(), hospital.getLat()))));
 
         return ops.add(GEO_KEY, locationSet);
     }
