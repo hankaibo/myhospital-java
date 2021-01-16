@@ -143,8 +143,7 @@ public class HospitalController {
      */
     @ApiOperation(value = "获取指定圆内的医院")
     @GetMapping("/nearby/circle")
-    public List<Hospital> hospitalWithinCircle(@Positive double lng, @Positive double lat, @Positive double r,
-        @Positive @RequestParam(value = "limit", defaultValue = "200") int limit) {
+    public List<Hospital> hospitalWithinCircle(@Positive double lng, @Positive double lat, @Positive double r) {
         // 圆
         Point center = new Point(lng, lat);
         Distance radius = new Distance(r, RedisGeoCommands.DistanceUnit.METERS);
@@ -152,7 +151,7 @@ public class HospitalController {
 
         // 参数
         RedisGeoCommands.GeoRadiusCommandArgs args = RedisGeoCommands.GeoRadiusCommandArgs.newGeoRadiusArgs()
-            .includeDistance().includeCoordinates().sortAscending().limit(limit);
+            .includeDistance().includeCoordinates().sortAscending();
 
         return hospitalService.getPointRadius(circle, args);
     }

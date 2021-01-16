@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import cn.mypandora.springboot.modular.system.model.po.Dictionary;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.*;
@@ -53,6 +52,9 @@ public class HospitalServiceImpl implements HospitalService {
         // 使用通用 Mapper Example 用法，亦可用传统的 xml 配置文件。
         Example example = new Example(Hospital.class);
         Example.Criteria criteria = example.createCriteria();
+        if (StringUtils.isNotBlank(hospital.getName())) {
+            criteria.andEqualTo("name", hospital.getName());
+        }
         List<Hospital> hospitalList = hospitalMapper.selectByExample(example);
         return new PageInfo<>(hospitalList);
     }
@@ -158,11 +160,12 @@ public class HospitalServiceImpl implements HospitalService {
      * @return 完整的医院信息
      */
     private List<Hospital> getHospital(List<Hospital> hospitalList) {
+        if (hospitalList.size() == 0) {
+            return hospitalList;
+        }
         Example example = new Example(Hospital.class);
         Example.Criteria criteria = example.createCriteria();
-        if (hospitalList != null) {
-            criteria.andIn("id", hospitalList.stream().mapToLong(Hospital::getId).boxed().collect(Collectors.toList()));
-        }
+        criteria.andIn("id", hospitalList.stream().mapToLong(Hospital::getId).boxed().collect(Collectors.toList()));
         return hospitalMapper.selectByExample(example);
     }
 }

@@ -1,8 +1,12 @@
 package cn.mypandora.springboot.modular.hospital.model;
 
+import cn.mypandora.springboot.core.util.CustomLocalDateTimeDeserializer;
+import cn.mypandora.springboot.core.util.CustomLocalDateTimeSerializer;
 import cn.mypandora.springboot.core.validate.AddGroup;
 import cn.mypandora.springboot.core.validate.UpdateGroup;
 import cn.mypandora.springboot.modular.system.model.po.BaseEntity;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
@@ -19,6 +23,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 /**
  * @author hankaibo
@@ -29,7 +34,7 @@ import javax.validation.constraints.Size;
 @Data
 @Table(name = "tbl_hospital")
 @NameStyle(Style.camelhumpAndLowercase)
-public class Hospital extends BaseEntity {
+public class Hospital {
 
     @Tolerate
     public Hospital() {
@@ -40,7 +45,7 @@ public class Hospital extends BaseEntity {
     @NotNull(groups = {UpdateGroup.class}, message = "主键不能为空")
     @KeySql(dialect = IdentityDialect.MYSQL)
     @Id
-    protected Long id;
+    private Long id;
 
     /**
      * 医院名称
@@ -102,14 +107,14 @@ public class Hospital extends BaseEntity {
      * 医院经度
      */
     @ApiModelProperty(value = "医院经度")
-    @Size(groups = {AddGroup.class, UpdateGroup.class}, message = "")
+    @Positive(groups = {AddGroup.class, UpdateGroup.class}, message = "")
     private Double lng;
 
     /**
      * 医院纬度
      */
     @ApiModelProperty(value = "医院纬度")
-    @Size(groups = {AddGroup.class, UpdateGroup.class}, message = "")
+    @Positive(groups = {AddGroup.class, UpdateGroup.class}, message = "")
     private Double lat;
 
     /**
@@ -117,5 +122,22 @@ public class Hospital extends BaseEntity {
      */
     @Transient
     private Double distance;
+
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(hidden = true)
+    @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    private LocalDateTime createTime;
+
+    /**
+     * 修改时间
+     */
+    @ApiModelProperty(hidden = true)
+    @JsonDeserialize(using = CustomLocalDateTimeDeserializer.class)
+    @JsonSerialize(using = CustomLocalDateTimeSerializer.class)
+    private LocalDateTime updateTime;
 
 }
