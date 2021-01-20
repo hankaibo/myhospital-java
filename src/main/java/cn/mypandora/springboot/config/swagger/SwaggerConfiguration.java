@@ -117,7 +117,7 @@ public class SwaggerConfiguration implements WebMvcConfigurer {
     }
 
     private List<SecurityScheme> securitySchemes() {
-        ApiKey apiKey = new ApiKey("Authorization", "token", In.HEADER.toValue());
+        ApiKey apiKey = new ApiKey("Authorization", "Authorization", In.HEADER.toValue());
         return Collections.singletonList(apiKey);
     }
 
