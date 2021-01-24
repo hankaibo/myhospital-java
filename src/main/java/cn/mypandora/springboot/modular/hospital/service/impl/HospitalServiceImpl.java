@@ -64,8 +64,16 @@ public class HospitalServiceImpl implements HospitalService {
         if (StringUtils.isNotBlank(hospital.getLevel())) {
             criteria.andEqualTo("level", hospital.getLevel());
         }
+        example.setOrderByClause("code");
         List<Hospital> hospitalList = hospitalMapper.selectByExample(example);
         return new PageInfo<>(hospitalList);
+    }
+
+    @Override
+    public List<Hospital> listA19Hospital() {
+        Hospital hospital = new Hospital();
+        hospital.setFlag("A");
+        return hospitalMapper.select(hospital);
     }
 
     @Override
@@ -163,7 +171,7 @@ public class HospitalServiceImpl implements HospitalService {
 
     @Override
     public List<Map<String, Object>> countHospitalByType() {
-       return hospitalMapper.countHospitalByType();
+        return hospitalMapper.countHospitalByType();
     }
 
     @Override
@@ -215,7 +223,5 @@ public class HospitalServiceImpl implements HospitalService {
         criteria.andIn("id", hospitalList.stream().mapToLong(Hospital::getId).boxed().collect(Collectors.toList()));
         return hospitalMapper.selectByExample(example);
     }
-
-
 
 }

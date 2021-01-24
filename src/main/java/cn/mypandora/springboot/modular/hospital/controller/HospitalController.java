@@ -163,6 +163,17 @@ public class HospitalController {
     }
 
     /**
+     * 获取A类医院数据。
+     *
+     * @return 列表数据
+     */
+    @ApiOperation(value = "A类医院列表")
+    @GetMapping("/map/a19")
+    public List<Hospital> listA19Hospital() {
+        return hospitalService.listA19Hospital();
+    }
+
+    /**
      * 分页查询A类医院数据。
      *
      * @param pageNum

@@ -37,6 +37,13 @@ public interface HospitalService {
     PageInfo<Hospital> pageHospital(int pageNum, int pageSize, Hospital hospital);
 
     /**
+     * 获取A类医院列表.
+     * 
+     * @return A类医院
+     */
+    List<Hospital> listA19Hospital();
+
+    /**
      * 添加医院。
      *
      * @param hospital
@@ -113,7 +120,7 @@ public interface HospitalService {
      * 
      * @return 各类别医院数量
      */
-    List<Map<String, Object>>countHospitalByType();
+    List<Map<String, Object>> countHospitalByType();
 
     /**
      * 根据给定地理位置坐标获取指定范围内的地理位置集合
