@@ -1,7 +1,9 @@
 package cn.mypandora.springboot.modular.hospital.controller;
 
 import java.util.List;
+import java.util.Map;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,12 +139,10 @@ public class HospitalController {
      *            圆心纬度
      * @param r
      *            圆心半径
-     * @param limit
-     *            数量
      * @return 医院列表
      */
     @ApiOperation(value = "获取指定圆内的医院")
-    @GetMapping("/nearby/circle")
+    @GetMapping("/map/circle")
     public List<Hospital> hospitalWithinCircle(@Positive double lng, @Positive double lat, @Positive double r) {
         // 圆
         Point center = new Point(lng, lat);
@@ -154,6 +154,101 @@ public class HospitalController {
             .includeDistance().includeCoordinates().sortAscending();
 
         return hospitalService.getPointRadius(circle, args);
+    }
+
+    @ApiOperation(value = "分类统计各医院数量")
+    @GetMapping("/map/type")
+    public List<Map<String, Object>> countHospitalByType() {
+        return hospitalService.countHospitalByType();
+    }
+
+    /**
+     * 分页查询A类医院数据。
+     *
+     * @param pageNum
+     *            页码
+     * @param pageSize
+     *            每页条数
+     * @param name
+     *            医院名称
+     * @return 分页数据
+     */
+    @ApiOperation(value = "A类医院列表")
+    @GetMapping("/a19")
+    public PageInfo<Hospital> pageHospitalA19(
+        @Positive @RequestParam(value = "current", defaultValue = "1") @ApiParam(value = "页码",
+            required = true) int pageNum,
+        @Positive @RequestParam(value = "pageSize", defaultValue = "10") @ApiParam(value = "每页条数",
+            required = true) int pageSize,
+        @RequestParam(value = "name", required = false) @ApiParam(value = "医院名称") String name) {
+        Hospital hospital = new Hospital();
+        hospital.setName(name);
+        hospital.setFlag("A");
+        return hospitalService.pageHospital(pageNum, pageSize, hospital);
+    }
+
+    /**
+     * 添加A类医院。
+     *
+     * @param idList
+     *            医院主键数组
+     */
+    @ApiOperation(value = "添加A类医院")
+    @PostMapping("/a19")
+    public void addHospitalA19(@NotNull @RequestBody @ApiParam(value = "医院主键id数组", required = true) Long[] idList) {
+        hospitalService.addBatchHospitalA19(idList);
+    }
+
+    /**
+     * 查询A类医院详细数据。
+     *
+     * @param id
+     *            医院主键id
+     * @return 医院信息
+     */
+    @ApiOperation(value = "医院详情")
+    @GetMapping("/a19/{id}")
+    public Hospital
+        getHospitalA19ById(@Positive @PathVariable("id") @ApiParam(value = "医院主键id", required = true) Long id) {
+        return hospitalService.getHospitalById(id);
+    }
+
+    /**
+     * 更新医院。
+     *
+     * @param hospital
+     *            医院数据
+     */
+    @ApiOperation(value = "医院更新")
+    @PutMapping("/a19/{id}")
+    public void updateHospitalA19(
+        @Validated({UpdateGroup.class}) @RequestBody @ApiParam(value = "医院数据", required = true) Hospital hospital) {
+        hospitalService.updateHospital(hospital);
+    }
+
+    /**
+     * 删除医院。
+     *
+     * @param id
+     *            医院主键id
+     */
+    @ApiOperation(value = "医院删除")
+    @DeleteMapping("/a19/{id}")
+    public void deleteHospitalA19(@Positive @PathVariable("id") @ApiParam(value = "医院主键id", required = true) Long id) {
+        hospitalService.deleteHospitalA19(id);
+    }
+
+    /**
+     * 批量删除医院。
+     *
+     * @param idList
+     *            医院主键id数组
+     */
+    @ApiOperation(value = "医院删除(批量)")
+    @DeleteMapping("/a19")
+    public void
+        deleteBatchHospitalA19(@NotNull @RequestBody @ApiParam(value = "医院主键id数组", required = true) Long[] idList) {
+        hospitalService.deleteBatchHospitalA19(idList);
     }
 
 }

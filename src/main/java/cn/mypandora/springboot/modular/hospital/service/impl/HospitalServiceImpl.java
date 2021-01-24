@@ -55,6 +55,15 @@ public class HospitalServiceImpl implements HospitalService {
         if (StringUtils.isNotBlank(hospital.getName())) {
             criteria.andEqualTo("name", hospital.getName());
         }
+        if (StringUtils.isNotBlank(hospital.getFlag())) {
+            criteria.andEqualTo("flag", hospital.getFlag());
+        }
+        if (StringUtils.isNotBlank(hospital.getType())) {
+            criteria.andEqualTo("type", hospital.getType());
+        }
+        if (StringUtils.isNotBlank(hospital.getLevel())) {
+            criteria.andEqualTo("level", hospital.getLevel());
+        }
         List<Hospital> hospitalList = hospitalMapper.selectByExample(example);
         return new PageInfo<>(hospitalList);
     }
@@ -152,6 +161,44 @@ public class HospitalServiceImpl implements HospitalService {
         return ops.hash(GEO_KEY, hospitals);
     }
 
+    @Override
+    public List<Map<String, Object>> countHospitalByType() {
+       return hospitalMapper.countHospitalByType();
+    }
+
+    @Override
+    public void addBatchHospitalA19(Long[] ids) {
+        Example example = new Example(Hospital.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andIn("id", Arrays.asList(ids));
+
+        Hospital hospital = new Hospital();
+        hospital.setFlag("A");
+        hospitalMapper.updateByExampleSelective(hospital, example);
+    }
+
+    @Override
+    public void deleteHospitalA19(Long id) {
+        Example example = new Example(Hospital.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("id", id);
+
+        Hospital hospital = new Hospital();
+        hospital.setFlag("");
+        hospitalMapper.updateByExampleSelective(hospital, example);
+    }
+
+    @Override
+    public void deleteBatchHospitalA19(Long[] ids) {
+        Example example = new Example(Hospital.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andIn("id", Arrays.asList(ids));
+
+        Hospital hospital = new Hospital();
+        hospital.setFlag("");
+        hospitalMapper.updateByExampleSelective(hospital, example);
+    }
+
     /**
      * 根据redis返回的数据补全
      * 
@@ -168,4 +215,7 @@ public class HospitalServiceImpl implements HospitalService {
         criteria.andIn("id", hospitalList.stream().mapToLong(Hospital::getId).boxed().collect(Collectors.toList()));
         return hospitalMapper.selectByExample(example);
     }
+
+
+
 }

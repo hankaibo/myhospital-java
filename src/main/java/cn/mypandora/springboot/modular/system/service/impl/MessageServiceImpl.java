@@ -107,7 +107,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public Msg getMessageById(Long id, String source, Long userId) {
         Msg info;
-        if (source.equals("INBOX")) {
+        if ("INBOX".equals(source)) {
             info = messageReceiverMapper.getMessageById(id, userId);
         } else {
             info = messageSenderMapper.getMessageById(id, userId);

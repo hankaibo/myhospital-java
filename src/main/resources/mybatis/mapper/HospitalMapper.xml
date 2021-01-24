@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mypandora.springboot.modular.hospital.mapper.HospitalMapper">
+    <resultMap id="hospitalMap" type="map">
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="count" jdbcType="INTEGER" property="count" />
+    </resultMap>
+
+    <select id="countHospitalByType" resultMap="hospitalMap">
+        SELECT t.type, COUNT(t.type) AS COUNT
+        FROM tbl_hospital t
+        GROUP BY t.type
+    </select>
+
+</mapper>
