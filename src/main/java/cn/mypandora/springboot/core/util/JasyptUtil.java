@@ -19,7 +19,7 @@ public class JasyptUtil {
 
     /**
      * Jasyp加密（PBEWithMD5AndDES）
-     * 
+     *
      * @param plainText
      *            待加密的原文
      * @param key
@@ -40,7 +40,7 @@ public class JasyptUtil {
 
     /**
      * Jaspy解密（PBEWithMD5AndDES）
-     * 
+     *
      * @param encryptedText
      *            待解密密文
      * @param key
@@ -60,9 +60,8 @@ public class JasyptUtil {
     }
 
     /**
-     * 
      * Jasyp 加密（PBEWITHHMACSHA512ANDAES_256）
-     * 
+     *
      * @param plainText
      *            待加密的原文
      * @param key
@@ -89,7 +88,7 @@ public class JasyptUtil {
 
     /**
      * Jaspy解密（PBEWITHHMACSHA512ANDAES_256）
-     * 
+     *
      * @param encryptedText
      *            待解密密文
      * @param key
@@ -122,7 +121,7 @@ public class JasyptUtil {
 
         // MD5 密文及明文
         String encryptWithMD5Str = encryptWithMD5(plainText, key);
-        String decryptWithMD5Str = decryptWithMD5(encryptWithMD5Str, key);
+        String decryptWithMD5Str = decryptWithMD5("DxIMWvJXceRM2ZRMhuXIooUXBheCirEeCwPqBj5zdQUMRZAe0X6ZzHp6hMBrMpEG", key);
 
         // SHA512 密文及明文
         String encryptWithSHA512Str = encryptWithSHA512(plainText, key);

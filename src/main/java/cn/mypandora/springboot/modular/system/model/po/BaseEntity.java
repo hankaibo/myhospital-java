@@ -23,11 +23,11 @@ import tk.mybatis.mapper.code.Style;
 
 /**
  * BaseEntity
- * 
+ *
  * <p>
  * 基类，所有 PO 实体都继承它。
  * </p>
- * 
+ *
  * @author hankaibo
  * @date 2019/7/17
  */
@@ -41,8 +41,8 @@ public abstract class BaseEntity implements Serializable {
      * 主键
      */
     @ApiModelProperty(value = "主键id")
-    @Positive(groups = {AddGroup.class, UpdateGroup.class}, message = "主键必须为正整数")
-    @NotNull(groups = {UpdateGroup.class}, message = "主键不能为空")
+    @Positive(groups = {AddGroup.class, UpdateGroup.class}, message = "{base.id.positive}")
+    @NotNull(groups = {UpdateGroup.class}, message = "{base.id.notNull}")
     @KeySql(dialect = IdentityDialect.MYSQL)
     @Id
     protected Long id;

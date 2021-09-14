@@ -1,27 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.mypandora.springboot.modular.system.mapper.DictionaryMapper">
-
-    <delete id="deleteDictionaryById">
-        DELETE t
-        FROM sys_dictionary t
-        WHERE 1 = 1
-            AND t.id = #{id}
-           OR t.parent_id = #{id}
-    </delete>
-
-    <delete id="deleteDictionaryByListId">
-        DELETE t
-        FROM sys_dictionary t
-        WHERE 1=1
-        AND t.id in
-        <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-        OR t.parent_id in
-        <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </delete>
+    <resultMap id="DictionaryMap" type="dictionary">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
 
 </mapper>

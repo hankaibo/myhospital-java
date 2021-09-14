@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 
 import cn.mypandora.springboot.config.exception.BusinessException;
@@ -50,8 +49,6 @@ import tk.mybatis.mapper.entity.Example;
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-
-    private static final ObjectMapper om = new ObjectMapper();
 
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
@@ -258,7 +255,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void enableUser(Long id, Integer status) {
+    public void enableUser(Long id, StatusEnum status) {
         LocalDateTime now = LocalDateTime.now();
         User user = new User();
         user.setId(id);
@@ -370,7 +367,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 根据用户姓名，获取其角色码和id
-     * 
+     *
      * @param username
      *            用户名称
      * @return 角色信息
@@ -392,14 +389,14 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 根据用户姓名，获取其资源码
-     * 
+     *
      * @param username
      *            用户名称
      * @return 资源码
      */
     private String getResourceCodes(String username) {
         List<Resource> resourceList =
-            resourceService.listResourceByUserIdOrName(null, username, null, StatusEnum.ENABLED.getValue());
+            resourceService.listResourceByUserIdOrName(null, username, null, StatusEnum.ENABLED);
         List<String> resourceCodeList = resourceList.stream().map(Resource::getCode).collect(Collectors.toList());
         return StringUtils.join(resourceCodeList, ',');
     }

@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import cn.mypandora.springboot.core.enums.StatusEnum;
 import cn.mypandora.springboot.modular.system.model.po.Department;
+import cn.mypandora.springboot.modular.system.model.po.Region;
 import cn.mypandora.springboot.modular.system.model.po.Resource;
 import cn.mypandora.springboot.modular.system.model.po.Role;
 import cn.mypandora.springboot.modular.system.model.vo.DepartmentTree;
+import cn.mypandora.springboot.modular.system.model.vo.RegionTree;
 import cn.mypandora.springboot.modular.system.model.vo.ResourceTree;
 import cn.mypandora.springboot.modular.system.model.vo.RoleTree;
 
@@ -40,13 +43,13 @@ public class TreeUtil {
             resourceTree.setKey(resource.getId().toString());
             resourceTree.setValue(resource.getId().toString());
             resourceTree.setTitle(resource.getName());
-            resourceTree.setDisabled(resource.getStatus() == 0);
+            resourceTree.setDisabled(resource.getStatus() == StatusEnum.DISABLED);
             resourceTree.setParentId(resource.getParentId());
             // 列表字段
-            resourceTree.setStatus(resource.getStatus());
             resourceTree.setUri(resource.getUri());
             resourceTree.setCode(resource.getCode());
             resourceTree.setMethod(resource.getMethod());
+            resourceTree.setStatus(resource.getStatus().getName());
             resourceTree.setDescription(resource.getDescription());
             fragmentTree.add(resourceTree);
         }
@@ -85,7 +88,7 @@ public class TreeUtil {
      */
     public static List<DepartmentTree> department2Tree(List<Department> departmentList) {
         List<DepartmentTree> roots = new ArrayList<>();
-        // 1.
+        // 1. 转换数据类型并将不存在的父id置空
         List<DepartmentTree> fragmentTree = new ArrayList<>();
         for (Department department : departmentList) {
             DepartmentTree departmentTree = new DepartmentTree();
@@ -93,10 +96,10 @@ public class TreeUtil {
             departmentTree.setKey(department.getId().toString());
             departmentTree.setValue(department.getId().toString());
             departmentTree.setTitle(department.getName());
-            departmentTree.setDisabled(department.getStatus() == 0);
+            departmentTree.setDisabled(department.getStatus() == StatusEnum.DISABLED);
             departmentTree.setParentId(department.getParentId());
             // 列表字段
-            departmentTree.setStatus(department.getStatus());
+            departmentTree.setStatus(department.getStatus().getName());
             departmentTree.setDescription(department.getDescription());
             fragmentTree.add(departmentTree);
         }
@@ -127,6 +130,56 @@ public class TreeUtil {
     }
 
     /**
+     * 将地区数据转换为树。
+     *
+     * @param regionList
+     *            地区列表
+     * @return 地区树
+     */
+    public static List<RegionTree> region2Tree(List<Region> regionList) {
+        List<RegionTree> roots = new ArrayList<>();
+        // 1. 转换数据类型并将不存在的父id置空
+        List<RegionTree> fragmentTree = new ArrayList<>();
+        for (Region region : regionList) {
+            RegionTree regionTree = new RegionTree();
+            regionTree.setId(region.getId());
+            regionTree.setKey(region.getId().toString());
+            regionTree.setValue(region.getId().toString());
+            regionTree.setTitle(region.getName());
+            regionTree.setDisabled(region.getStatus() == StatusEnum.DISABLED);
+            regionTree.setParentId(region.getParentId());
+            // 列表字段
+            regionTree.setStatus(region.getStatus().getName());
+            regionTree.setDescription(region.getDescription());
+            fragmentTree.add(regionTree);
+        }
+        fragmentTree.stream().filter(item -> {
+            if (fragmentTree.stream().noneMatch(it -> it.getId().equals(item.getParentId()))) {
+                item.setParentId(null);
+            }
+            return true;
+        }).collect(Collectors.toList());
+        // 2.
+        RegionTree node;
+        Map<Long, Integer> map = new HashMap<>(fragmentTree.size());
+        int i;
+        for (i = 0; i < fragmentTree.size(); i += 1) {
+            map.put(fragmentTree.get(i).getId(), i);
+            fragmentTree.get(i).setChildren(new ArrayList<>());
+        }
+        for (i = 0; i < fragmentTree.size(); i += 1) {
+            node = fragmentTree.get(i);
+            if (node.getParentId() != null) {
+                // if you have dangling branches check that map[node.parentId] exists
+                fragmentTree.get(map.get(node.getParentId())).getChildren().add(node);
+            } else {
+                roots.add(node);
+            }
+        }
+        return roots;
+    }
+
+    /**
      * 将角色数据转换为树。
      *
      * @param roleList
@@ -135,7 +188,7 @@ public class TreeUtil {
      */
     public static List<RoleTree> role2Tree(List<Role> roleList) {
         List<RoleTree> roots = new ArrayList<>();
-        // 1.
+        // 1. 转换数据类型并将不存在的父id置空
         List<RoleTree> fragmentTree = new ArrayList<>();
         for (Role role : roleList) {
             RoleTree roleTree = new RoleTree();
@@ -143,11 +196,11 @@ public class TreeUtil {
             roleTree.setKey(role.getId().toString());
             roleTree.setValue(role.getId().toString());
             roleTree.setTitle(role.getName());
-            roleTree.setDisabled(role.getStatus() == 0);
+            roleTree.setDisabled(role.getStatus() == StatusEnum.DISABLED);
             roleTree.setParentId(role.getParentId());
             // 列表字段
             roleTree.setCode(role.getCode());
-            roleTree.setStatus(role.getStatus());
+            roleTree.setStatus(role.getStatus().getName());
             roleTree.setDescription(role.getDescription());
             fragmentTree.add(roleTree);
         }
