@@ -6,7 +6,7 @@
 
 </div>
 
-本项目基于[myspringboot](https://github.com/hankaibo/myspringboot)，请参考[README.zh-CN.md](https://github.com/hankaibo/myspringboot/blob/master/README.md)。
+本项目基于[amy-java](https://github.com/hankaibo/amy-java)，请参考[README.zh-CN.md](https://github.com/hankaibo/amy-java/blob/master/README.md)。
 
 ## 赞助商
 
